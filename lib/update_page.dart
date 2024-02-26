@@ -44,27 +44,27 @@ class _UpdatePageState extends State<UpdatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Note'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextField(
-              controller: _controller,
-              maxLines: null,
-              keyboardType: TextInputType.multiline,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                updateNote();
-              },
-              child: const Text('Save changes'),
-            ),
-          ],
+        appBar: AppBar(
+          title: const Text('Edit Note'),
         ),
-      ),
-    );
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              TextField(
+                controller: _controller,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            updateNote();
+          },
+          tooltip: 'Save changes',
+          child: const Icon(Icons.save),
+        ));
   }
 }

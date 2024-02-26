@@ -79,18 +79,29 @@ class _HomePageState extends State<HomePage> {
         onRefresh: () async {
           getNotes();
         },
-        child: ListView.builder(
-          itemCount: notes.length,
-          itemBuilder: (ctx, index) => NoteWidget(
-            note: notes[index],
-            onDelete: () {
-              deleteNote(notes[index]['id']);
-            },
-            getNotes: () {
-              getNotes();
-            },
-          ),
-        ),
+        child: notes.isEmpty
+            ? const Center(
+                child: Text(
+                  'No notes available. Try adding a new note!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color.fromARGB(255, 50, 110, 156),
+                  ),
+                ),
+              )
+            : ListView.builder(
+                itemCount: notes.length,
+                itemBuilder: (ctx, index) => NoteWidget(
+                  note: notes[index],
+                  onDelete: () {
+                    deleteNote(notes[index]['id']);
+                  },
+                  getNotes: () {
+                    getNotes();
+                  },
+                ),
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {

@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<dynamic> notes = [];
   TextEditingController controller = TextEditingController();
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -24,15 +25,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   void getNotes() async {
+    setState(() {
+      isLoading = true;
+    });
+
     var url = Uri.parse('${Config.API_URL}/notes/');
     var response = await http.get(url);
     if (response.statusCode == 200) {
       var jsonResponse = convert.jsonDecode(response.body) as List<dynamic>;
       setState(() {
         notes = jsonResponse;
+        isLoading = false;
       });
     } else {
       print('Request failed with status: ${response.statusCode}.');
+      isLoading = false;
     }
   }
 
@@ -79,29 +86,40 @@ class _HomePageState extends State<HomePage> {
         onRefresh: () async {
           getNotes();
         },
-        child: notes.isEmpty
+        child: isLoading
             ? const Center(
-                child: Text(
-                  'No notes available. Try adding a new note!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color.fromARGB(255, 50, 110, 156),
-                  ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 15),
+                    Text('Fetching data...'),
+                  ],
                 ),
               )
-            : ListView.builder(
-                itemCount: notes.length,
-                itemBuilder: (ctx, index) => NoteWidget(
-                  note: notes[index],
-                  onDelete: () {
-                    deleteNote(notes[index]['id']);
-                  },
-                  getNotes: () {
-                    getNotes();
-                  },
-                ),
-              ),
+            : notes.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No notes available. Try adding a new note!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Color.fromARGB(255, 50, 110, 156),
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: notes.length,
+                    itemBuilder: (ctx, index) => NoteWidget(
+                      note: notes[index],
+                      onDelete: () {
+                        deleteNote(notes[index]['id']);
+                      },
+                      getNotes: () {
+                        getNotes();
+                      },
+                    ),
+                  ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
